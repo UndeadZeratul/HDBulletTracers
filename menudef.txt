@@ -1,0 +1,37 @@
+OptionMenu HideousTracers
+{
+
+	Title "Hideous Tracers Options"
+ 	StaticText ""
+	StaticText "Feature Toggles", "cyan"
+	StaticText ""
+	Option "Enabled:            ", "trc_enabled", "OnOff"
+	Option "Explosives Tracers: ", "trc_frags",   "OnOff"
+	Option "Buckshot   Tracers: ", "trc_bucks",   "OnOff"
+  	StaticText ""
+ 	StaticText ""
+	StaticText "Alpha Options", "cyan"
+	StaticText ""
+	StaticText "Initial Alpha", 1
+ 	StaticText ""
+    StaticText  "Control the initial alpha of bullet tracers. ", "white"
+	Slider      "Initial Tracer Alpha: ", "trc_initial_alpha", 0, 1, 0.1, 1
+	SafeCommand "Reset i.alpha options", "resetcvar trc_initial_alpha"
+	StaticText ""
+	StaticText "Lost Alpha", 1
+ 	StaticText ""
+    StaticText  "Control the amount of alpha lost by a bullet tracer per tick.", "white"
+	Slider      "Lost Tracer Alpha: ", "trc_fade_amount", 0, 1, 0.1, 1
+	SafeCommand "Reset l.alpha options", "resetcvar trc_fade_amount"
+ 	StaticText ""
+   	StaticText ""
+	StaticText "Reset Options", "cyan"
+	SafeCommand "Reset all options    ", "trc_reset_cvars"
+}
+
+
+
+AddOptionMenu "OptionsMenu"
+{
+	Submenu "Hideous Tracers Options", "HideousTracers"
+}

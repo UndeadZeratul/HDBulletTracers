@@ -1,0 +1,171 @@
+//Tracer code based off of Josh's Blasters mod,
+//used in ZikShadow's Star Wars reskin pack
+
+version "4.6"
+
+class HDB_TracerHandler : EventHandler
+{	
+
+	private double alphaFadeActual;
+	private double alphaInitialActual;
+	private bool   fragSpawningActual;
+	private bool   buckSpawningActual;
+	private bool   isEnabled;
+	private bool   cvarsAvailable;
+	
+	private Transient Cvar holder;
+
+	void initialize()
+	{
+		holder = Cvar.GetCvar("trc_initial_alpha", players[consolePlayer]);
+		if(holder)alphaInitialActual     = double(holder.getFloat());
+		
+		holder = Cvar.GetCvar("trc_fade_amount",    players[consolePlayer]);
+		if(holder)alphaFadeActual        = double(holder.getFloat());
+		
+		holder = Cvar.GetCvar("trc_frags",          players[consolePlayer]);
+		if(holder)fragSpawningActual     = bool(holder.getInt());
+		
+		holder = Cvar.GetCvar("trc_bucks",          players[consolePlayer]);
+		if(holder)buckSpawningActual     = bool(holder.getBool());
+		
+		holder = Cvar.GetCvar("trc_enabled",        players[consolePlayer]);
+		if(holder)isEnabled              = bool(holder.getBool());
+		
+		cvarsAvailable = true;
+	}
+
+	override void worldTick()
+	{
+		if (!cvarsavailable)
+		{
+		  initialize();
+		}
+	}
+
+	override void WorldThingSpawned(WorldEvent e)
+	{
+		class<Actor> type;	
+		HDBulletActor b = HDBulletActor(e.Thing);
+		
+		if (!cvarsAvailable || !isEnabled || !b) return;
+		
+		switch(e.thing.getclassname())
+		{
+			case 'HDB_frag':
+				if(!fragSpawningActual)return;
+				break;
+				
+			case 'HDB_00':
+				if(!buckSpawningActual)return;
+				break;
+				
+			default:
+				break;
+			
+			// These aren't actually bullets. 
+			case 'HDB_ODD':
+				return;
+		}
+		
+		if(!type)type = 'HDTracerYellow';
+
+
+
+		
+		let lz = HDB_Tracer(Actor.Spawn(type, b.pos));
+		lz.target = b;
+		lz.pitch = b.pitch+180;
+		lz.angle = b.angle;
+		lz.scale.y = b.vel.length();
+		
+		lz.alpha      = alphaInitialActual;
+		lz.fadeamount = alphaFadeActual;
+		// Uncomment this if using vel ever works better. 
+		//lz.vel = b.vel;
+
+	}
+}
+
+class HDB_Tracer : Actor
+{
+	double  fadeamount;
+	vector3 oldpos;
+	bool waited;
+	override void postbeginplay()
+	{
+		super.postbeginplay();
+		oldpos = pos;
+		waited = false;
+	}
+	
+	override void Tick()
+	{
+		Super.Tick();
+		if (!target)
+		{
+			if(waited)
+				destroy();
+			else
+				waited = true;
+		}
+		else
+		{
+			oldpos = pos;
+			setorigin(target.pos, true);
+		}
+	}
+
+	Default
+	{
+		+FLATSPRITE
+		+BRIGHT
+		+NOGRAVITY
+		+NOBLOCKMAP
+		+CLIENTSIDEONLY
+		RenderStyle "Add";
+	}
+}
+
+
+class HDTracerYellow : HDB_Tracer
+{
+	States
+	{
+	Spawn:
+		BTCR A 0 NODELAY
+		{
+			bINTERPOLATEANGLES = true;
+		}
+		BTCR A 1 A_FadeOut(fadeamount);
+		wait;
+	}
+}
+
+class HDTracerParticle : HDB_Tracer
+{
+	States
+	{
+		Spawn:
+			TNT1 A 1 NODELAY
+			{
+				A_FadeOut(fadeamount);
+				
+				int iterations = 30;
+				// Position for the while loop below
+				vector3 posinc = (cos(invoker.angle), sin(invoker.angle), 0);
+				for(int i = 0; i < iterations; i++)
+				{
+					A_SpawnParticle("FFFFFF",
+					flags: SPF_FULLBRIGHT,
+					lifetime: 1,
+					size: frandom(0.75,1.25),
+					xoff: posinc.x * i,
+					yoff: posinc.y * i,
+					zoff: posinc.z * i,
+					startalphaf: invoker.alpha);
+				}
+			}
+			wait;
+	}
+}

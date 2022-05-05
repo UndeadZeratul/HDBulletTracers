@@ -1,0 +1,1 @@
+alias trc_reset_cvars "resetcvar trc_initial_alpha; resetcvar trc_fade_amount; resetcvar trc_enabled; resetcvar trc_frags; resetcvar trc_bucks;"

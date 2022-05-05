@@ -1,0 +1,17 @@
+Mod Credits
+--------------------------------------------------------------------------------
+ Zscript by FDA,
+ original idea by FDA on the HDDiscord,
+ original monster concept from SunMadCat's insanely varied ZD monster pack. 
+ Based on code taken from Hideous Destructor's mob_barrels.zs.
+--------------------------------------------------------------------------------
+================================================================================
+Sprite Credits
+--------------------------------------------------------------------------------
+	Mimic Barrel
+--------------------------------------------------------------------------------
+	BALE A...D:
+	- Id Software, SunMadCat
+	- Unchanged. 
+	- https://zandronum.com/forum/viewtopic.php?t=4445
+--------------------------------------------------------------------------------
