@@ -1,6 +1,6 @@
 // They're already trc-er.  
-user float trc_initial_alpha = 1.00;
-user float trc_fade_amount   = 0.25;
-user bool  trc_enabled       = true;
-user bool  trc_frags         = true;
-user bool  trc_bucks         = true;
+nosave float trc_initial_alpha = 1.00;
+nosave float trc_fade_amount   = 0.25;
+nosave bool  trc_enabled       = true;
+nosave bool  trc_frags         = true;
+nosave bool  trc_bucks         = true;

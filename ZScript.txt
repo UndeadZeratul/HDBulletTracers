@@ -6,58 +6,21 @@ version "4.6"
 class HDB_TracerHandler : EventHandler
 {	
 
-	private double alphaFadeActual;
-	private double alphaInitialActual;
-	private bool   fragSpawningActual;
-	private bool   buckSpawningActual;
-	private bool   isEnabled;
-	private bool   cvarsAvailable;
-	
-	private Transient Cvar holder;
-
-	void initialize()
-	{
-		holder = Cvar.GetCvar("trc_initial_alpha", players[consolePlayer]);
-		if(holder)alphaInitialActual     = double(holder.getFloat());
-		
-		holder = Cvar.GetCvar("trc_fade_amount",    players[consolePlayer]);
-		if(holder)alphaFadeActual        = double(holder.getFloat());
-		
-		holder = Cvar.GetCvar("trc_frags",          players[consolePlayer]);
-		if(holder)fragSpawningActual     = bool(holder.getInt());
-		
-		holder = Cvar.GetCvar("trc_bucks",          players[consolePlayer]);
-		if(holder)buckSpawningActual     = bool(holder.getBool());
-		
-		holder = Cvar.GetCvar("trc_enabled",        players[consolePlayer]);
-		if(holder)isEnabled              = bool(holder.getBool());
-		
-		cvarsAvailable = true;
-	}
-
-	override void worldTick()
-	{
-		if (!cvarsavailable)
-		{
-		  initialize();
-		}
-	}
-
 	override void WorldThingSpawned(WorldEvent e)
 	{
 		class<Actor> type;	
 		HDBulletActor b = HDBulletActor(e.Thing);
 		
-		if (!cvarsAvailable || !isEnabled || !b) return;
+		if (!trc_enabled || !b) return;
 		
 		switch(e.thing.getclassname())
 		{
 			case 'HDB_frag':
-				if(!fragSpawningActual)return;
+				if(!trc_frags)return;
 				break;
 				
 			case 'HDB_00':
-				if(!buckSpawningActual)return;
+				if(!trc_bucks)return;
 				break;
 				
 			default:
@@ -79,8 +42,8 @@ class HDB_TracerHandler : EventHandler
 		lz.angle = b.angle;
 		lz.scale.y = b.vel.length();
 		
-		lz.alpha      = alphaInitialActual;
-		lz.fadeamount = alphaFadeActual;
+		lz.alpha      = trc_initial_alpha;
+		lz.fadeamount = trc_fade_amount;
 		// Uncomment this if using vel ever works better. 
 		//lz.vel = b.vel;
 
