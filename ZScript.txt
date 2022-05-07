@@ -122,7 +122,7 @@ class HDB_Tracer : Actor
 		+BRIGHT
 		+NOGRAVITY
 		+NOBLOCKMAP
-		+CLIENTSIDEONLY
+		FloatBobPhase 0; // for some reason, this thing uses rng, which causes desyncs
 		RenderStyle "Add";
 	}
 }
