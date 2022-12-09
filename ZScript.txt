@@ -22,7 +22,12 @@ class HDB_TracerHandler : EventHandler
 			case 'HDB_00':
 				if(!trc_bucks)return;
 				break;
-				
+
+			case 'HDB_Plasma'://disables tracers on plasma weapons
+				return;
+				break;
+
+	
 			default:
 				break;
 			
