@@ -1,5 +1,5 @@
-sprite BTCRA0, 4,1{
- offset 2,0
- xscale 4 
+sprite BTCRA0, 6,1{
+ offset 3,0
+ xscale 20 
  patch BTCRA0,0,0{}
 }
