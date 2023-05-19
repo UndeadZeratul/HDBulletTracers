@@ -1,6 +1,15 @@
 // They're already trc-er.  
 nosave float trc_initial_alpha = 1.00;
-nosave float trc_fade_amount   = 0.25;
+nosave float trc_fade_amount   = 0.1;
+nosave float trc_length_div    = 1;
+nosave bool  trc_zoffset       = false;
+nosave int   trc_zoffset_value = 0;
 nosave bool  trc_enabled       = true;
+nosave bool  trc_9mm           = true;
+nosave bool  trc_355           = true;
 nosave bool  trc_frags         = true;
 nosave bool  trc_bucks         = true;
+nosave bool  trc_wads          = true;
+nosave bool  trc_426           = true;
+nosave bool  trc_776           = true;
+nosave bool  trc_bronto        = true;

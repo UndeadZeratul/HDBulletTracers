@@ -1,0 +1,185 @@
+//Tracer code based off of Josh's Blasters mod,
+//used in ZikShadow's Star Wars reskin pack
+
+version "4.6"
+
+class HDB_TracerHandler : EventHandler
+{	
+
+	override void WorldThingSpawned(WorldEvent e)
+	{
+		class<Actor> type;	
+		HDBulletActor b = HDBulletActor(e.Thing);
+		
+		if (!trc_enabled || !b) return;
+		//abort if tracers are disabled or no bullet to trace
+		
+		//checks which tracers are enabled/disabled
+		switch(e.thing.getclassname()) 
+		{
+			case 'HDB_frag':    // grenade/explosive shrapnel
+				if(!trc_frags)return;
+				break;
+			
+			case 'HDB_9':       // pistol/SMG rounds
+				if(!trc_9mm)return;
+				break;
+				
+			case 'HDB_355':     // revolver rounds
+				if(!trc_355)return;
+				break;
+			
+			case 'HDB_00':      // shotgun pellets
+				if(!trc_bucks)return;
+				break;
+
+            case 'HDB_wad':     // shotgun wadding
+				if(!trc_wads)return;
+				break;
+	
+            case 'HDB_426':     // ZM66/Vulcanette rounds
+				if(!trc_426)return;
+				break;	
+				
+            case 'HDB_776':     // Boss/Liberator rounds
+				if(!trc_776)return;
+				break;	
+	
+	        case 'HDB_bronto':  // Brontornis bolts
+				if(!trc_bronto)return;
+				break;	
+	
+			default:
+				break;
+			
+		// this section for hard-disabling certain tracer types
+			
+			// These aren't actually bullets. 
+			case 'HDB_ODD':
+				return;
+				
+			case 'HDB_Plasma': //disables tracers on plasma weapons
+				return;
+				break;
+		}
+		
+		if(!type)type = 'HDTracerYellow'; //defaults to this if no other tracer type defined
+		
+		let tracerz=trc_zoffset_value; //offsets the tracer to avoid the 'laser-eyes' effect
+        if (type=='HDB_frag'||!trc_zoffset)tracerz=0;//don't offset if disabled or bullet is shrapnel
+
+		let lz = HDB_Tracer //attach tracer to bullet
+		         (Actor.Spawn
+		          (type,    //pick which tracer to use
+		           b.pos    //spawn tracer at bullet's position
+		         +(0,0,tracerz) //apply tracer z-offset, if any
+		          )
+		         );
+
+		lz.target = b; //use bullet as point of origin
+		lz.pitch = b.pitch+180; //the +180 flips the tracer in front of the bullet
+		lz.angle = b.angle; //the angle of the bullet when fired
+		lz.scale.y = b.vel.length()/trc_length_div; //controls tracer length
+		lz.scale.x = b.stamina*0.0025; //bullet size affects tracer width
+		
+		lz.alpha      = trc_initial_alpha;
+		lz.fadeamount = trc_fade_amount;
+		
+		
+		// i'm not quite sure what this was for, hmmm
+	/*
+		// Uncomment this if using vel ever works better. 
+		//lz.vel = b.vel;
+                                                          */
+
+	}
+}
+
+//base tracer actor
+class HDB_Tracer : Actor
+{
+	double  fadeamount;
+	vector3 oldpos;
+	bool waited;
+	override void postbeginplay()
+	{
+		super.postbeginplay();
+		oldpos = pos;
+		waited = false;
+	}
+	
+	override void Tick()
+	{
+		Super.Tick();
+		
+		if (!target)//check if bullet still exists
+		{
+			if(waited)
+				destroy();//remove tracer if "no bullet" flag is true
+			else 
+			    waited = true;//set flag if bullet is gone
+		}
+		else
+		{
+		    //tracer follows bullet position
+			oldpos = pos;
+			setorigin(target.pos, true);
+		}
+	}
+
+	Default
+	{
+		+FLATSPRITE // orients sprite horizontally, like a carpet
+		+BRIGHT     // makes tracer visible in dark sectors
+		+NOGRAVITY  // tracers ignore the laws of gravity
+		+NOBLOCKMAP // this disables collision detection, improving performance greatly
+		FloatBobPhase 0; // [note from dastrukar] for some reason, this thing uses rng, which causes desyncs
+		+SYNCHRONIZED; // apparently this helps avoid desyncs, too
+		RenderStyle "Add";// makes tracers semi-transparent
+	}
+}
+
+// default, a warm orange-yellow tracer
+class HDTracerYellow : HDB_Tracer
+{
+	States
+	{
+	Spawn:
+		BTCR A 0 NODELAY
+		{
+			bINTERPOLATEANGLES = true;
+		}
+		BTCR A 1;
+		BTCR A 1 A_FadeOut(fadeamount);
+		wait;
+	}
+}
+
+//this doesn't seem to do anything ???
+class HDTracerParticle : HDB_Tracer
+{
+	States
+	{
+		Spawn:
+			TNT1 A 1 NODELAY
+			{
+				A_FadeOut(fadeamount);
+				
+				int iterations = 30;
+				// Position for the while loop below
+				vector3 posinc = (cos(invoker.angle), sin(invoker.angle), 0);
+				for(int i = 0; i < iterations; i++)
+				{
+					A_SpawnParticle("FFFFFF",
+					flags: SPF_FULLBRIGHT,
+					lifetime: 1,
+					size: frandom(0.75,1.25),
+					xoff: posinc.x * i,
+					yoff: posinc.y * i,
+					zoff: posinc.z * i,
+					startalphaf: invoker.alpha);
+				}
+			}
+			wait;
+	}
+}

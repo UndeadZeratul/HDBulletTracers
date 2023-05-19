@@ -1,37 +1,48 @@
 OptionMenu HideousTracers
 {
-
-	Title "Hideous Tracers Options"
+	Title "=== Hideous Tracers Options ==="
  	StaticText ""
-	StaticText "Feature Toggles", "cyan"
+	Option "Bullet Tracers Enabled: ", "trc_enabled", "OnOff"
 	StaticText ""
-	Option "Enabled:            ", "trc_enabled", "OnOff"
-	Option "Explosives Tracers: ", "trc_frags",   "OnOff"
-	Option "Buckshot   Tracers: ", "trc_bucks",   "OnOff"
+	StaticText "-- Bullets --", "cyan"
+	Option "9mm Tracers:            ", "trc_9mm",    "OnOff"
+	Option ".355 Tracers:           ", "trc_355",    "OnOff"
+	Option "Buckshot Tracers:       ", "trc_bucks",  "OnOff"
+  	Option "Wadding Tracers:        ", "trc_wads",   "OnOff"
+  	Option "4.26mm Tracers:         ", "trc_426",    "OnOff"
+    Option "7.76mm Tracers:         ", "trc_776",    "OnOff"
+ 	Option "Brontornis Tracers:     ", "trc_bronto", "OnOff"
+	Option "Explosives Tracers:     ", "trc_frags",  "OnOff"
   	StaticText ""
+	StaticText "-- Visual Settings --", "cyan"
+  	StaticText ""
+  	StaticText "Tracer Height", 1
+ 	StaticText "Controls the height the tracer origin. ", "white"
+  	Option "Enable Tracer Z-Offset: ", "trc_zoffset", "OnOff"
+  	Slider "Set Z-Offset:           ", "trc_zoffset_value", -10, 10, 1, 0
  	StaticText ""
-	StaticText "Alpha Options", "cyan"
+ 	StaticText "Tracer Length", 1
+ 	StaticText "Controls how far to stretch tracers. ", "white"
+  	Slider "Divide length by:       ", "trc_length_div", 1, 10, 1, 0
 	StaticText ""
 	StaticText "Initial Alpha", 1
  	StaticText ""
     StaticText  "Control the initial alpha of bullet tracers. ", "white"
-	Slider      "Initial Tracer Alpha: ", "trc_initial_alpha", 0, 1, 0.1, 1
-	SafeCommand "Reset i.alpha options", "resetcvar trc_initial_alpha"
+	Slider "Initial Tracer Alpha:   ", "trc_initial_alpha", 0, 1, 0.1, 1
+	SafeCommand "  Reset options", "resetcvar trc_initial_alpha"
 	StaticText ""
 	StaticText "Lost Alpha", 1
  	StaticText ""
     StaticText  "Control the amount of alpha lost by a bullet tracer per tick.", "white"
-	Slider      "Lost Tracer Alpha: ", "trc_fade_amount", 0, 1, 0.1, 1
-	SafeCommand "Reset l.alpha options", "resetcvar trc_fade_amount"
+	Slider      "Lost Tracer Alpha: ", "trc_fade_amount", 0, 1, 0.1, 1 
+	SafeCommand "  Reset options", "resetcvar trc_fade_amount"
  	StaticText ""
    	StaticText ""
-	StaticText "Reset Options", "cyan"
-	SafeCommand "Reset all options    ", "trc_reset_cvars"
+	StaticText "-- Reset Options --", "cyan"
+	SafeCommand "Reset all options  ", "trc_reset_cvars"
 }
-
-
 
 AddOptionMenu "OptionsMenu"
 {
-	Submenu "Hideous Tracers Options", "HideousTracers"
+	Submenu "Hideous Tracers Options", "HideousTracers", "gold"
 }
