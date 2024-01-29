@@ -77,20 +77,28 @@ class HDB_TracerHandler : EventHandler
 		         );
 
 		lz.target = b; //use bullet as point of origin
-		lz.pitch = b.pitch+180; //the +180 flips the tracer in front of the bullet
-		lz.angle = b.angle; //the angle of the bullet when fired
+		//lz.pitch = b.pitch+180; //the +180 flips the tracer in front of the bullet
+		//lz.angle = b.angle; //the angle of the bullet when fired
 		lz.scale.y = b.vel.length()/trc_length_div; //controls tracer length
 		lz.scale.x = b.stamina*0.0025; //bullet size affects tracer width
 		
 		lz.alpha      = trc_initial_alpha;
 		lz.fadeamount = trc_fade_amount;
 		
+		// Math taken from https://stackoverflow.com/questions/2782647/how-to-get-yaw-pitch-and-roll-from-a-3d-vector
+		// used for bullet types that have no set angle (should be identical to bullet angle anyway).
+		lz.angle = atan2(b.vel.y, b.vel.x);
 		
-		// i'm not quite sure what this was for, hmmm
-	/*
-		// Uncomment this if using vel ever works better. 
-		//lz.vel = b.vel;
-                                                          */
+		Vector3 dangle = b.vel;
+		dangle.x *= dangle.x;
+		dangle.y *= dangle.y;
+		dangle.z *= dangle.z;
+		float langle = dangle.x + dangle.y;
+		
+		console.printf("Original: "..lz.pitch);
+		lz.pitch = atan2(-(b.vel.z),sqrt(langle)) + 180;
+		console.printf("Altered: "..lz.pitch);
+
 
 	}
 }
