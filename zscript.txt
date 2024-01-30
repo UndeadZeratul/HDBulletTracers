@@ -93,8 +93,6 @@ class HDB_TracerHandler : EventHandler
         // Use atan in conjunction with the inverse of vel.z (then add 180).
 		// Condensed by phantombeta (spectralalpha on the HD Discord)
         lz.pitch = atan2(-(b.vel.z),b.vel.XY.Length()) + 180;
-
-
 	}
 }
 
@@ -111,24 +109,39 @@ class HDB_Tracer : Actor
 		waited = false;
 	}
 	
+    // Phantombeta's optimized tick code. 
 	override void Tick()
-	{
-		Super.Tick();
-		
-		if (!target)//check if bullet still exists
-		{
-			if(waited)
-				destroy();//remove tracer if "no bullet" flag is true
-			else 
-			    waited = true;//set flag if bullet is gone
-		}
-		else
-		{
-		    //tracer follows bullet position
-			oldpos = pos;
-			setorigin(target.pos, true);
-		}
-	}
+    {
+        // Return if the actor got removed, or if the world is frozen. 
+        if (!self || bDestroyed || !CheckNoDelay () || isFrozen())
+            return;
+
+        // Advance the state
+        if (tics != -1)
+        {
+            if (tics > 0)
+                tics--;
+
+            while (!tics)
+            {
+                // Actor was removed
+                if (!self || bDestroyed || !CurState || !SetState (CurState.NextState))
+                    return;
+            }
+        }
+        
+        if (!target)//check if bullet still exists
+        {
+            if(waited)
+                destroy();//remove tracer if "no bullet" flag is true
+            else 
+                waited = true;//set flag if bullet is gone
+        }
+        else
+        {
+            setorigin(target.pos, true);
+        }
+    }
 
 	Default
 	{
@@ -136,6 +149,7 @@ class HDB_Tracer : Actor
 		+BRIGHT     // makes tracer visible in dark sectors
 		+NOGRAVITY  // tracers ignore the laws of gravity
 		+NOBLOCKMAP // this disables collision detection, improving performance greatly
+		+NOINTERACTION // Second half of 'no blockmap' (Phantombeta)
 		FloatBobPhase 0; // [note from dastrukar] for some reason, this thing uses rng, which causes desyncs
 		+SYNCHRONIZED; // apparently this helps avoid desyncs, too
 		RenderStyle "Add";// makes tracers semi-transparent
