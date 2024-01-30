@@ -1,17 +1,26 @@
 Mod Credits
 --------------------------------------------------------------------------------
- Zscript by FDA,
- original idea by FDA on the HDDiscord,
- original monster concept from SunMadCat's insanely varied ZD monster pack. 
- Based on code taken from Hideous Destructor's mob_barrels.zs.
+ Zscript by:
+	Josh,
+	Swampyrad,
+	Dastrukar,
+	PhantomBeta,
+	FDA.
+	
+ Commits by:
+	Swampyrad,
+	Dastrukar,
+	UndeadZeratul,
+	FDA.	
+	
+ Original idea (and some base code) from Josh's Blasters Mod.
 --------------------------------------------------------------------------------
 ================================================================================
 Sprite Credits
 --------------------------------------------------------------------------------
-	Mimic Barrel
+	Bullet Tracer
 --------------------------------------------------------------------------------
-	BALE A...D:
-	- Id Software, SunMadCat
+	BTCR A:
+	- Josh, 
 	- Unchanged. 
-	- https://zandronum.com/forum/viewtopic.php?t=4445
 --------------------------------------------------------------------------------

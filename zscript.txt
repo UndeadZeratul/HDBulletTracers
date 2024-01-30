@@ -90,16 +90,9 @@ class HDB_TracerHandler : EventHandler
 		// used for bullet types that have no set angle (should be identical to bullet angle anyway).
 		lz.angle = atan2(b.vel.y, b.vel.x);
 		
-		// apply ^2 to x and y. 
-		Vector3 dangle = b.vel;
-		dangle.x *= dangle.x;
-		dangle.y *= dangle.y;
-		
-		// Combine values for the length. 
-		float langle = dangle.x + dangle.y;
-		
-		// Use atan in conjunction with the inverse of vel.z (then add 180). 
-		lz.pitch = atan2(-(b.vel.z),sqrt(langle)) + 180;
+        // Use atan in conjunction with the inverse of vel.z (then add 180).
+		// Condensed by phantombeta (spectralalpha on the HD Discord)
+        lz.pitch = atan2(-(b.vel.z),b.vel.XY.Length()) + 180;
 
 
 	}
