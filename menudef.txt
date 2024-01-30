@@ -46,3 +46,8 @@ AddOptionMenu "OptionsMenu"
 {
 	Submenu "Hideous Tracers Options", "HideousTracers", "gold"
 }
+
+AddOptionMenu "HDAddonMenu"
+{
+	Submenu "Hideous Tracers Options", "HideousTracers", "gold"
+}

@@ -77,21 +77,26 @@ class HDB_TracerHandler : EventHandler
 		         );
 
 		lz.target = b; //use bullet as point of origin
-		lz.pitch = b.pitch+180; //the +180 flips the tracer in front of the bullet
-		lz.angle = b.angle; //the angle of the bullet when fired
+		
 		lz.scale.y = b.vel.length()/trc_length_div; //controls tracer length
 		lz.scale.x = b.stamina*0.0025; //bullet size affects tracer width
 		
 		lz.alpha      = trc_initial_alpha;
 		lz.fadeamount = trc_fade_amount;
 		
+		// Old pitch and angle. 
+		//lz.pitch = b.pitch+180; //the +180 flips the tracer in front of the bullet
+		//lz.angle = b.angle; //the angle of the bullet when fired
 		
-		// i'm not quite sure what this was for, hmmm
-	/*
-		// Uncomment this if using vel ever works better. 
-		//lz.vel = b.vel;
-                                                          */
-
+		
+		// Math taken from https://stackoverflow.com/questions/2782647/how-to-get-yaw-pitch-and-roll-from-a-3d-vector
+		// Pitch: ToolmakerStever
+		// used for bullet types that have no set angle (should be identical to bullet angle anyway).
+		lz.angle = atan2(b.vel.y, b.vel.x);
+		
+        // Use atan in conjunction with the inverse of vel.z (then add 180).
+		// Condensed by phantombeta (spectralalpha on the HD Discord)
+        lz.pitch = atan2(-(b.vel.z),b.vel.XY.Length()) + 180;
 	}
 }
 
@@ -108,24 +113,39 @@ class HDB_Tracer : Actor
 		waited = false;
 	}
 	
+    // Phantombeta's optimized tick code. 
 	override void Tick()
-	{
-		Super.Tick();
-		
-		if (!target)//check if bullet still exists
-		{
-			if(waited)
-				destroy();//remove tracer if "no bullet" flag is true
-			else 
-			    waited = true;//set flag if bullet is gone
-		}
-		else
-		{
-		    //tracer follows bullet position
-			oldpos = pos;
-			setorigin(target.pos, true);
-		}
-	}
+    {
+        // Return if the actor got removed, or if the world is frozen. 
+        if (!self || bDestroyed || !CheckNoDelay () || isFrozen())
+            return;
+
+        // Advance the state
+        if (tics != -1)
+        {
+            if (tics > 0)
+                tics--;
+
+            while (!tics)
+            {
+                // Actor was removed
+                if (!self || bDestroyed || !CurState || !SetState (CurState.NextState))
+                    return;
+            }
+        }
+        
+        if (!target)//check if bullet still exists
+        {
+            if(waited)
+                destroy();//remove tracer if "no bullet" flag is true
+            else 
+                waited = true;//set flag if bullet is gone
+        }
+        else
+        {
+            setorigin(target.pos, true);
+        }
+    }
 
 	Default
 	{
@@ -133,6 +153,8 @@ class HDB_Tracer : Actor
 		+BRIGHT     // makes tracer visible in dark sectors
 		+NOGRAVITY  // tracers ignore the laws of gravity
 		+NOBLOCKMAP // this disables collision detection, improving performance greatly
+		+NOINTERACTION // Second half of 'no blockmap' (Phantombeta)
+		+INTERPOLATEANGLES
 		FloatBobPhase 0; // [note from dastrukar] for some reason, this thing uses rng, which causes desyncs
 		+SYNCHRONIZED; // apparently this helps avoid desyncs, too
 		RenderStyle "Add";// makes tracers semi-transparent
@@ -145,17 +167,15 @@ class HDTracerYellow : HDB_Tracer
 	States
 	{
 	Spawn:
-		BTCR A 0 NODELAY
-		{
-			bINTERPOLATEANGLES = true;
-		}
+		BTCR A 0 NODELAY;
 		BTCR A 1;
 		BTCR A 1 A_FadeOut(fadeamount);
 		wait;
 	}
 }
 
-//this doesn't seem to do anything ???
+// Subclass for having tracers be particle based. Could be a no damage
+// raygun attack call instead, probably(?) but that'd be faster than the bullet. 
 class HDTracerParticle : HDB_Tracer
 {
 	States
